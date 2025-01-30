@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 # Constants
 g = 9.81  # Gravity (m/s^2)
-angle = 61  # Random launch angle
-speed = 21  # Random speed (m/s)
+angle = 41  # Random launch angle
+speed = 43  # Random speed (m/s)
 
 # Convert to radians
 theta = np.radians(angle)
