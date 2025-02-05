@@ -3,410 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Experiment Report Generator</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
-
+    <title>Mathematics Experiment Simulator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #4a90e2;
-            --secondary: #6c5ce7;
-        }
-
+        /* Custom CSS */
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+            background-color: #f0f2f6;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .form-group {
-            margin-bottom: 20px;
-            animation: slideUp 0.5s ease;
-        }
-
-        label {
+        .stButton>button {
+            width: 220px;
+            height: 50px;
+            font-size: 18px;
+            margin: 20px auto;
             display: block;
-            margin-bottom: 8px;
-            color: #2d3436;
-            font-weight: 500;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            margin: 15px 0;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: #4CAF50;
             color: white;
-            padding: 12px 30px;
             border: none;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .input-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
-        .loading {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-            color: var(--primary);
+        .preview-image {
+            max-width: 400px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .pdf-preview {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 20px;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
+        .disclaimer {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Experiment specific styles */
+        .plot-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Math Experiment Report Generator</h1>
-        
-        <form id="reportForm">
-            
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="name" required>
+        <div class="disclaimer">
+            <h3>DISCLAIMER</h3>
+            <p>This tool is provided for educational purposes only. The developer is not responsible for any consequences arising from its use.</p>
+            <label>
+                <input type="checkbox" id="agreeCheckbox">
+                I agree to the terms and conditions
+            </label>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <h1>Mathematics Experiment Simulator</h1>
+
+            <!-- Student Details -->
+            <div class="input-section">
+                <h2>Student Information</h2>
+                <input type="text" id="name" placeholder="Full Name" class="form-input">
+                <input type="text" id="usn" placeholder="USN" class="form-input">
+                <input type="text" id="section" placeholder="Section" class="form-input">
+                <label>
+                    <input type="checkbox" id="includeDetails" checked>
+                    Include my details in the PDF
+                </label>
             </div>
 
-            <div class="form-group">
-                <label>USN</label>
-                <input type="text" id="usn" required>
-            </div>
-
-            <div class="form-group">
-                <label>Section</label>
-                <input type="text" id="section" required>
-            </div>
-
-            <div class="form-group">
-                <label>Experiment</label>
-                <select id="experiment" required>
-                    <option value="1">Projectile Motion</option>
-                    <option value="2">Rainfall Prediction</option>
-                    <option value="3">3D Target Probability</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Include name in report?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="includeName" value="yes" checked> Yes</label>
-                    <label><input type="radio" name="includeName" value="no"> No</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Report Format</label>
-                <select id="format" required>
-                    <option value="pdf">PDF</option>
-                    <option value="docx">DOCX</option>
+            <!-- Experiment Selection -->
+            <div class="input-section">
+                <h2>Select Experiment</h2>
+                <select id="experimentSelect" class="form-select">
+                    <option>Projectile Motion Analysis</option>
+                    <option>Rainfall Probability Estimation</option>
+                    <option>3D Hit Probability Distribution</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn">Generate Report</button>
-        </form>
+            <!-- Design Selection -->
+            <div class="input-section">
+                <h2>Select PDF Design</h2>
+                <select id="designSelect" class="form-select">
+                    <option>Elegant Teal</option>
+                    <option>Modern Gray</option>
+                    <option>Minimalist Underline</option>
+                </select>
+                <img src="design-preview.jpg" class="preview-image" id="designPreview">
+            </div>
 
-        <div class="loading">Generating report...</div>
+            <!-- Experiment Controls -->
+            <button class="stButton" onclick="runExperiment()">Generate and Preview</button>
+
+            <!-- Results Display -->
+            <div id="plotContainer" class="plot-container">
+                <!-- Plotly charts will be rendered here -->
+            </div>
+
+            <!-- PDF Preview Section -->
+            <div class="pdf-preview">
+                <h3>PDF Preview</h3>
+                <iframe id="pdfPreview" width="100%" height="500px"></iframe>
+                <button class="stButton" onclick="downloadPDF()">Download PDF Report</button>
+            </div>
+        </div>
     </div>
 
-    <script type="text/babel">
-        const firebaseConfig = {
-            apiKey: "AIzaSyBSbonwVE3PPXIIrSrvrB75u2AQ_B_Tni4",
-            authDomain: "discraft-c1c41.firebaseapp.com",
-            databaseURL: "https://discraft-c1c41-default-rtdb.firebaseio.com",
-            projectId: "discraft-c1c41",
-            storageBucket: "discraft-c1c41.appspot.com",
-            messagingSenderId: "525620150766",
-            appId: "1:525620150766:web:a426e68d206c68764aceff",
-            measurementId: "G-2TRNRYRX5E"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const experiments = {
-            1: {
-                name: "Projectile Motion",
-                code: `import numpy as np
-import matplotlib.pyplot as plt
-
-def projectile_motion(v0, theta):
-    g = 9.81  # acceleration due to gravity (m/s²)
-    theta = np.radians(theta)  # convert degrees to radians
-    t_flight = 2 * v0 * np.sin(theta) / g  # total flight time
-    t = np.linspace(0, t_flight, 100)  # time array
-    x = v0 * np.cos(theta) * t  # horizontal positions
-    y = v0 * np.sin(theta) * t - 0.5 * g * t**2  # vertical positions
-    
-    # Plot trajectory
-    plt.figure(figsize=(8, 4))
-    plt.plot(x, y)
-    plt.title("Projectile Trajectory")
-    plt.xlabel("Horizontal Distance (m)")
-    plt.ylabel("Vertical Height (m)")
-    plt.grid(True)
-    plt.show()
-    
-    return max(y), max(x)
-
-`,
-                output: "Maximum Height: 63.77 m\nRange: 254.84 m"
-            },
-            2: {
-                name: "Rainfall Prediction",
-                code: `from scipy import integrate
-import numpy as np
-
-def rainfall_probability(pdf, a, b):
-    """
-    Calculate probability of rainfall between amounts a and b
-    using probability density function (pdf)
-    """
-    result, _ = integrate.quad(pdf, a, b)
-    return result
-
-# Define normal distribution PDF
-def normal_pdf(x, mu=50, sigma=10):
-    return np.exp(-(x - mu)**2 / (2 * sigma**2)) / (sigma * np.sqrt(2 * np.pi))
-
-# Calculate probability between 45mm and 55mm
-lower_bound = 45
-upper_bound = 55
-probability = rainfall_probability(normal_pdf, lower_bound, upper_bound)
-
-print(f"Probability of rainfall between {lower_bound}-{upper_bound} mm: {probability*100:.1f}%")`,
-                output: "Probability of rainfall between 45-55 mm: 38.3%"
-            },
-            3: {
-                name: "3D Target Probability",
-                code: `import sympy as sp
-
-def calculate_hit_probability(a, b, c):
-    """
-    Calculate probability of hitting a 3D target with dimensions (2a × 2b × 2c)
-    using exponential decay probability density function
-    """
-    x, y, z = sp.symbols('x y z')
-    f = sp.exp(-(x**2 + y**2 + z**2))  # probability density function
-    integral = sp.integrate(f, 
-                          (x, -a, a), 
-                          (y, -b, b), 
-                          (z, -c, c))
-    return integral.evalf()
-
-`,
-                output: "Hit probability for 2x2x2 target: 78.12%"
-            }
-        };
-
-        async function collectUserData(formData) {
-            const userData = {
-                ...formData,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                userAgent: navigator.userAgent,
-                screenResolution: `${screen.width}x${screen.height}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                languages: navigator.languages,
-                cookiesEnabled: navigator.cookieEnabled,
-                onlineStatus: navigator.onLine,
-            };
-
-            try {
-                console.log('Fetching IP data...');
-                const ipResponse = await fetch('https://api.ipapi.com/api/check?access_key=YOUR_API_KEY');
-                const ipData = await ipResponse.json();
-                userData.geoLocation = ipData;
-                console.log('IP data fetched:', ipData);
-            } catch (error) {
-                console.error('Error fetching IP data:', error);
-            }
-
-            return userData;
-        }
-
-        async function generatePDF(data, includeName) {
-    console.log('Generating PDF report...');
-    try {
-        const doc = new jspdf.jsPDF();
-        
-        // Title of the report
-        doc.setFontSize(18);
-        doc.text('Math Experiment Report', 20, 20);
-        
-        let yPosition = 30; // Starting y-position for text placement
-        
-        if (includeName) {
-            doc.setFontSize(12);
-            doc.text(`Name: ${data.name}`, 20, yPosition);
-            yPosition += 6; // Adjust for space between lines
-            doc.text(`USN: ${data.usn}`, 20, yPosition);
-            yPosition += 6; 
-            doc.text(`Section: ${data.section}`, 20, yPosition);
-            yPosition += 12; // Add more space before experiment info
-        }
-
-        doc.setFontSize(14);
-        const experimentText = `Experiment: ${document.getElementById('experiment').options[data.experiment-1].text}`;
-        doc.text(experimentText, 20, yPosition);
-        yPosition += 8; // Adjust spacing after experiment title
-
-        // Add experiment code to the PDF with better alignment
-        doc.setFontSize(10); // Smaller font for code
-        doc.setFont('courier');
-        
-        const experimentCode = experiments[data.experiment].code.split('\n');
-        experimentCode.forEach(line => {
-            doc.text(line, 20, yPosition);
-            yPosition += 6; // Adjust for spacing between lines of code
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Disclaimer Agreement
+        document.getElementById('agreeCheckbox').addEventListener('change', function(e) {
+            document.getElementById('mainContent').style.display = e.target.checked ? 'block' : 'none';
         });
 
-        // Output section
-        doc.setFontSize(12);
-        doc.setFont('normal');
-        doc.text(`Output: ${experiments[data.experiment].output}`, 20, yPosition);
-        
-        console.log('Saving PDF report...');
-        doc.save('report.pdf');
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert('Error generating PDF: ' + error.message);
-    }
-}
-        async function generateDOCX(data, includeName) {
-            console.log('Generating DOCX report...');
-            try {
-                const doc = new docx.Document();
-                
-                doc.addSection({
-                    children: [
-                        new docx.Paragraph({
-                            text: 'Math Experiment Report',
-                            heading: docx.HeadingLevel.TITLE
-                        }),
-                        ...(includeName ? [
-                            new docx.Paragraph(`Name: ${data.name}`),
-                            new docx.Paragraph(`USN: ${data.usn}`),
-                            new docx.Paragraph(`Section: ${data.section}`)
-                        ] : []),
-                        new docx.Paragraph({
-                            text: `Experiment: ${document.getElementById('experiment').options[data.experiment-1].text}`,
-                            heading: docx.HeadingLevel.HEADING_2
-                        }),
-                        new docx.Paragraph({
-                            text: 'Code:',
-                            heading: docx.HeadingLevel.HEADING_3
-                        }),
-                        new docx.Paragraph({
-                            text: experiments[data.experiment].code,
-                            style: 'Code'
-                        }),
-                        new docx.Paragraph({
-                            text: `Output: ${experiments[data.experiment].output}`,
-                            heading: docx.HeadingLevel.HEADING_3
-                        })
-                    ]
-                });
+        // Design Preview Updater
+        document.getElementById('designSelect').addEventListener('change', function(e) {
+            document.getElementById('designPreview').src = `${e.target.value.toLowerCase().replace(' ', '-')}-preview.jpg`;
+        });
 
-                console.log('Converting DOCX to Blob...');
-                docx.Packer.toBlob(doc).then(blob => {
-                    console.log('DOCX Blob generated, starting download...');
-                    saveAs(blob, 'report.docx');
-                }).catch(error => {
-                    console.error('Error generating DOCX:', error);
-                    alert('Error generating DOCX: ' + error.message);
-                });
-            } catch (error) {
-                console.error('Error generating DOCX:', error);
-                alert('Error generating DOCX: ' + error.message);
+        // Experiment Runner
+        function runExperiment() {
+            const experiment = document.getElementById('experimentSelect').value;
+            
+            switch(experiment) {
+                case 'Projectile Motion Analysis':
+                    runProjectileMotion();
+                    break;
+                case 'Rainfall Probability Estimation':
+                    runRainfallAnalysis();
+                    break;
+                case '3D Hit Probability Distribution':
+                    run3DAnalysis();
+                    break;
             }
         }
 
-        document.getElementById('reportForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('Form submitted');
-            const loading = document.querySelector('.loading');
-            loading.style.display = 'block';
-            console.log('Displaying loading spinner...');
-
-            try {
-                const formData = {
-                    name: document.getElementById('name').value,
-                    usn: document.getElementById('usn').value,
-                    section: document.getElementById('section').value,
-                    experiment: document.getElementById('experiment').value,
-                    format: document.getElementById('format').value,
-                    includeName: document.querySelector('input[name="includeName"]:checked').value
+        function runProjectileMotion() {
+            // Generate random parameters
+            const v0 = Math.floor(Math.random() * 20) + 10;
+            const angles = Array.from({length: 3}, () => Math.floor(Math.random() * 50) + 20);
+            
+            // Generate trajectory data
+            const traces = angles.map(theta => {
+                const thetaRad = theta * Math.PI / 180;
+                const tFlight = (2 * v0 * Math.sin(thetaRad)) / 9.81;
+                const t = Array.from({length: 100}, (_, i) => tFlight * i/100);
+                const x = t.map(t => v0 * Math.cos(thetaRad) * t);
+                const y = t.map(t => v0 * Math.sin(thetaRad) * t - 0.5 * 9.81 * t**2);
+                
+                return {
+                    x: x,
+                    y: y,
+                    mode: 'lines',
+                    name: `${theta}°`
                 };
-                
-                console.log('Form data collected:', formData);
-                const userData = await collectUserData(formData);
-                console.log('User data collected:', userData);
+            });
 
-                // Log user data to Firebase
-                await db.collection('reports').add(userData);
-                console.log('User data logged to Firebase');
+            // Render plot
+            Plotly.newPlot('plotContainer', traces, {
+                title: `Projectile Motion (v0 = ${v0} m/s)`,
+                xaxis: {title: 'Horizontal Distance (m)'},
+                yaxis: {title: 'Vertical Distance (m)'}
+            });
+        }
 
-                // Generate report
-                const includeName = formData.includeName === 'yes';
-                if (formData.format === 'pdf') {
-                    await generatePDF(formData, includeName);
-                } else {
-                    await generateDOCX(formData, includeName);
-                }
-            } catch (error) {
-                console.error('Error generating report:', error);
-                alert('Error generating report: ' + error.message);
-            } finally {
-                loading.style.display = 'none';
-                console.log('Hiding loading spinner...');
-            }
-        });
+        function downloadPDF() {
+            // PDF generation logic would go here
+            alert('PDF generation would be implemented here');
+        }
+
+        // Similar functions for other experiments would be added
     </script>
 </body>
 </html>
