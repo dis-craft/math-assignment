@@ -339,7 +339,7 @@ plt.show()'''
 elif experiment == "Rainfall Probability Estimation":
     st.header("Rainfall Probability Analysis")
     
-    if st.button("Generate and Preview Report"):
+    if st.button("Generate and Preview"):
         mu = np.random.randint(30, 71)      # Mean rainfall (mm)
         sigma = np.random.randint(5, 21)      # Standard deviation (mm)
         pdf_func = lambda x: norm.pdf(x, mu, sigma)
@@ -395,12 +395,12 @@ plt.show()'''
             st.markdown(pdf_iframe, unsafe_allow_html=True)
         with col_download:
             with open(pdf_path, "rb") as f:
-                st.download_button("Download Report", f, file_name="rainfall_report.pdf")
+                st.download_button("Download PDF ", f, file_name="rainfall_report.pdf")
 
 elif experiment == "3D Hit Probability Distribution":
     st.header("3D Hit Probability Analysis")
     
-    if st.button("Generate and Preview Report"):
+    if st.button("Generate and Preview"):
         mean = np.random.randint(0, 31, size=3)  # 3D mean vector with each value between 0 and 30.
         A = np.random.randint(1, 5, (3, 3))        # Random matrix with integers between 1 and 4.
         cov = np.dot(A, A.T)                       # Positive definite covariance matrix.
@@ -453,67 +453,7 @@ plt.show()'''
             st.markdown(pdf_iframe, unsafe_allow_html=True)
         with col_download:
             with open(pdf_path, "rb") as f:
-                st.download_button("Download Report", f, file_name="3d_probability_report.pdf")
+                st.download_button("Download PDF", f, file_name="3d_probability_report.pdf")
 
 
 
-# Firebase Configuration
-firebaseConfig = {
-    "apiKey": "AIzaSyBSbonwVE3PPXIIrSrvrB75u2AQ_B_Tni4",
-    "authDomain": "discraft-c1c41.firebaseapp.com",
-    "databaseURL": "https://discraft-c1c41-default-rtdb.firebaseio.com",
-    "projectId": "discraft-c1c41",
-    "storageBucket": "discraft-c1c41.appspot.com",
-    "messagingSenderId": "525620150766",
-    "appId": "1:525620150766:web:a426e68d206c68764aceff",
-    "measurementId": "G-2TRNRYRX5E"
-}
-
-# Initialize Firebase
-firebase = pyrebase.initialize_app(firebaseConfig)
-db = firebase.database()
-
-# Function to get system information
-def get_system_info():
-    uname = platform.uname()
-    system_info = {
-        "system": uname.system,
-        "node_name": uname.node,
-        "release": uname.release,
-        "version": uname.version,
-        "machine": uname.machine,
-        "processor": uname.processor,
-        "cpu_count": psutil.cpu_count(logical=True),
-        "memory": psutil.virtual_memory().total
-    }
-    return system_info
-
-# Streamlit App
-st.title("User Interaction Logger")
-
-# User Input Fields
-name = st.text_input("Enter your name")
-usn = st.text_input("Enter your USN")
-section = st.text_input("Enter your section")
-include_name = st.checkbox("Include name in reports")
-experiment = st.selectbox("Select an experiment", ["Experiment 1", "Experiment 2", "Experiment 3"])
-selected_design = st.radio("Choose a design", ["Design A", "Design B", "Design C"])
-
-# Submit Button
-if st.button("Submit"):
-    # Collecting User Data
-    user_data = {
-        "name": name,
-        "usn": usn,
-        "section": section,
-        "include_name": include_name,
-        "experiment": experiment,
-        "design": selected_design,
-        "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-        "system_info": get_system_info()
-    }
-
-    # Log Data to Firebase
-    db.child("user_logs").push(user_data)
-
-    st.success("Data successfully logged to Firebase!")
