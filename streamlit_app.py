@@ -8,7 +8,7 @@ import io
 import os
 import base64
 import streamlit as st
-import pyrebase
+import pyrebase4
 import platform
 import psutil
 from datetime import datetime
