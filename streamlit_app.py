@@ -441,7 +441,7 @@ ax.set_ylabel("Y Position")
 ax.set_zlabel("Z Position")
 ax.set_title("3D Hit Probability Distribution")
 plt.show()'''
-python3 streamlit_app.py
+
         design_id = design_dict[selected_design]
         pdf_path = create_pdf(name, usn, section, experiment, buf, code, results_text, include_name, design_id)
         
