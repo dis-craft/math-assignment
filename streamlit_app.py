@@ -251,7 +251,7 @@ if experiment == "Projectile Motion Analysis":
     # st.header("Projectile Motion Trajectories")f
     
     
-    if st.button("Generate and Preview"):
+    if st.button("Generate PDF"):
         v0 = np.random.randint(10, 31)
         angles = np.random.randint(20, 71, size=3)
         g = 9.81
@@ -312,12 +312,13 @@ plt.show()'''
         with col1:
             with open(pdf_path, "rb") as f:
                 base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
-            st.markdown(pdf_iframe, unsafe_allow_html=True)
+            # pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
+            # st.markdown(pdf_iframe, unsafe_allow_html=True)
         with col2:
+            st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
             with open(pdf_path, "rb") as f:
-                st.download_button("Download PDF", f, file_name="projectile_report.pdf")
-
+                st.download_button("Download PDF", f, file_name="projectile_report.pdf",)
+                st.markdown("</div>", unsafe_allow_html=True)
 elif experiment == "Rainfall Probability Estimation":
     # st.header("Rainfall Probability Analysis")
     if st.button("Generate and Preview"):
@@ -366,11 +367,12 @@ plt.show()'''
         with col1:
             with open(pdf_path, "rb") as f:
                 base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
-            st.markdown(pdf_iframe, unsafe_allow_html=True)
+            # pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
+            # st.markdown(pdf_iframe, unsafe_allow_html=True)
         with col2:
             with open(pdf_path, "rb") as f:
                 st.download_button("Download PDF", f, file_name="rainfall_report.pdf")
+
 
 elif experiment == "3D Hit Probability Distribution":
     # st.header("3D Hit Probability Analysis")
@@ -415,8 +417,8 @@ plt.show()'''
         with col1:
             with open(pdf_path, "rb") as f:
                 base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
-            st.markdown(pdf_iframe, unsafe_allow_html=True)
+            # pdf_iframe = f'<div class="pdf-container"><iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe></div>'
+            # st.markdown(pdf_iframe, unsafe_allow_html=True)
         with col2:
             with open(pdf_path, "rb") as f:
                 st.download_button("Download PDF", f, file_name="3d_probability_report.pdf")
