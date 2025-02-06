@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 import scipy.integrate as spi
 from fpdf import FPDF
-import io
+import iow
 import os
 import base64
 import pyrebase
